@@ -1,6 +1,5 @@
 package com.example.carshop.servlet;
 
-import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,30 +7,52 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet("/create-car")
+@WebServlet(name = "CreateCarServlet", value = "/create-car")
 public class CreateCarServlet extends HttpServlet {
+
+
+    private static class JsonResponse {
+        private final String status;
+        private final String message;
+        private final Map<String, String> data;
+
+        public JsonResponse(String status, String message, Map<String, String> data) {
+            this.status = status;
+            this.message = message;
+            this.data = data;
+        }
+    }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         String carName = request.getParameter("car-name");
 
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        response.setContentType("application/json;charset=UTF-8");
+
+        Map<String, String> carData = new HashMap<>();
+        carData.put("name", carName);
 
 
-        Map<String, String> successResponse = new HashMap<>();
-        successResponse.put("status", "success");
-        successResponse.put("200", "Carro '" + carName + "' criado com sucesso!");
+        JsonResponse responseObject = new JsonResponse("success", "Carro '" + carName + "' criado com sucesso! ", carData);
 
 
-        String jsonResponse = new Gson().toJson(successResponse);
+        JsonUtil.sendJsonResponse(response, HttpServletResponse.SC_CREATED, responseObject);
+    }
 
 
-        PrintWriter out = response.getWriter();
-        out.print(jsonResponse);
-        out.flush();
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        JsonResponse responseObject = new JsonResponse(
+                "info",
+                "Este endpoint aceita requisições POST para criar um carro.",
+                Collections.emptyMap()
+        );
+
+        JsonUtil.sendJsonResponse(response, HttpServletResponse.SC_OK, responseObject);
     }
 }
