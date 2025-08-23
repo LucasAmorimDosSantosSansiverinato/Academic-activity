@@ -15,10 +15,10 @@ import java.util.Map;
 public class CreateCarServlet extends HttpServlet {
 
 
-    private static class JsonResponse {
-        private final String status;
-        private final String message;
-        private final Map<String, String> data;
+    private class JsonResponse {
+        private String status;
+        private String message;
+        private Map<String, String> data;
 
         public JsonResponse(String status, String message, Map<String, String> data) {
             this.status = status;
